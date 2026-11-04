@@ -5,7 +5,7 @@
 <!-- sdlc:auto:start overview -->
 expense claim application where you upload reciept and claim the expenses
 
-**Documentation version:** v2
+**Documentation version:** v3
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -15,7 +15,7 @@ expense claim application where you upload reciept and claim the expenses
 |---|---|
 | [Requirements](requirements/README.md) | v1 approved |
 | [Architecture](architecture/README.md) | 13 entries |
-| [Development](development/README.md) | 1 entry |
+| [Development](development/README.md) | 17 entries |
 | [Testing](testing/README.md) | 1 entry |
 | [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
@@ -31,7 +31,7 @@ expense claim application where you upload reciept and claim the expenses
 | [Runbook](deployment/runbook.md) | not deployed yet |
 | [Release notes](deployment/release-notes.md) | 0 releases |
 | [Traceability matrix](traceability-matrix.md) | 19 requirements |
-| [Changelog](CHANGELOG.md) | 2 versions |
+| [Changelog](CHANGELOG.md) | 3 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -56,7 +56,26 @@ expense claim application where you upload reciept and claim the expenses
 
 ### Development
 
-- Development phase has not started; no tickets, code, or build artifacts exist to document.
+- No explicit field mapping backlog items to sprint numbers was provided; sprint-to-epic groupings below are inferred from matching sprint goal wording to epic/story titles.
+- No start/end dates for the plan or individual sprints were given.
+- No execution/completion status (in-progress, done, blocked) was provided for any item.
+- Item-to-sprint assignment is inferred from goal text, not an explicit field.
+- No completion/test status reported for US-001, US-002 or their subtasks.
+- No acceptance-criteria detail beyond the story title was provided.
+- No completion/test status reported for US-003 or US-004.
+- No completion/test status reported for US-005 or US-006.
+- No completion/test status reported for US-007, US-008, US-009 or their subtasks.
+- No completion/test status reported for US-010 or US-011.
+- No completion/test status reported for US-012 or US-013.
+- No subtasks were listed for US-013, unlike comparable stories; unclear if this is intentional or incomplete breakdown.
+- No completion/test status reported for US-014, US-015 or US-016.
+- No detail on export format (CSV/PDF/etc.) was provided.
+- No completion/test status reported for US-017 or its subtasks.
+- No detail on specific email trigger conditions (which status transitions) or templates was provided.
+- No completion/test status reported for US-018 or US-019.
+- The epic name references DPDP (India's Digital Personal Data Protection Act) but no domain/compliance skill input was supplied defining its specific controls; only the privacy-notice and data-residency stories are traceable from the given input. A human should confirm whether other DPDP obligations (e.g. consent withdrawal, data subject access/erasure requests, breach notification) are addressed elsewhere, as none appear in this backlog.
+- Cannot confirm which, if any, stories or tasks have actually been implemented.
+- No linkage to a code repository, CI build, or test suite was provided for this phase.
 
 ### Testing
 
