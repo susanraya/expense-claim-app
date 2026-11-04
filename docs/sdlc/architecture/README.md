@@ -7,117 +7,91 @@
 
 ### ARCH-001 · approved · source: architecture:summary
 
-Lightweight web app for a single Indian company (<100 employees) to submit, approve and reimburse INR expense claims with receipt images, built on Svelte 5, NestJS 11, PostgreSQL 16 and AWS (ap-south-1 Mumbai).
+Approved v1 architecture: Svelte 5 frontend, NestJS 11 API, PostgreSQL 16, AWS ap-south-1 (Mumbai) with S3 receipt storage and SendGrid email, satisfying DPDP residency and the approved stack.
 
-Approved v1 architecture. Employees sign in with email/password, create INR claims (amount, date, category, description) and upload one or more receipt images (including phone-browser camera capture) stored in S3. Claims flow sequentially Employee -> Manager -> Finance; rejections return to the employee with a reason for resubmission. Admin/Finance manage users, roles, manager assignments and categories with optional per-category INR limits enforced at submission. Finance records reimbursement (no payment processing), filters/exports claims to CSV, and every claim keeps a chronological audit trail. Status-change emails go via SendGrid; a DPDP privacy notice is shown at onboarding. All compute, database and object storage are kept in AWS Mumbai for DPDP data residency.
+Lightweight expense claim web app for <100 employees in India. Employees sign in (email/password), create INR claims (amount, date, category, description), and upload receipt images including phone-browser camera capture, stored in S3 Mumbai. Claims flow sequentially Employee -> Manager -> Finance, with rejection reasons returned to the employee and resubmission support. Admin/Finance manage users, roles, manager assignments and categories with optional INR limits enforced at submission. Finance marks claims reimbursed (recording only), filters/exports to CSV, and every claim keeps a chronological audit trail. Status-change emails via SendGrid; DPDP privacy notice at onboarding. All personal data and receipts are kept inside India (ap-south-1) for DPDP residency.
 
-**Related:** ARCH-COMP-WEB, ARCH-COMP-API, ARCH-COMP-DB, ARCH-COMP-S3, ARCH-COMP-EMAIL
+**Related:** REQ-SCOPE, EPIC-001, EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-007, EPIC-008, EPIC-009
 
-- ⚠ No explicit mapping provided between this architecture and requirement IDs US-001..019; traceability to specific user stories cannot be confirmed from this input alone.
-- ⚠ No date or author/approver name given for the v1 approval.
-- ⚠ SendGrid is a non-Indian SaaS notification provider; architecture claims personal data and receipts are kept inside India for DPDP residency, but email notifications (containing employee names/emails and claim status) are routed through SendGrid, which is not stated to have in-India data processing -- potential residency conflict to confirm.
+### ARCH-002 · approved · source: architecture:component:web_app
 
-### ARCH-COMP-WEB · approved · source: architecture:components.web_app
+Svelte Web App -- the responsive UI for every user-facing function.
 
-Svelte 5 responsive web UI covering sign-in, claim creation/receipt capture, dashboards, approval queues, admin config, CSV export trigger and the privacy notice.
+Svelte 5 responsive web UI for sign-in, claim creation and receipt capture (phone-browser camera via standard file-input capture attribute), employee/manager/finance dashboards and queues, admin configuration, claims export trigger, and the DPDP privacy notice. Enforces role-appropriate (RBAC-aware) client-side navigation and is designed to work on phone browsers.
 
-Component: Svelte Web App (Svelte 5). Responsibilities: sign-in; claim creation and receipt capture (including phone-browser camera via file input capture attribute); employee dashboard; manager/finance approval queues; admin configuration screens; triggering claims CSV export; displaying the DPDP privacy notice. Enforces role-appropriate navigation client-side and works on phone browsers.
+**Related:** US-001, US-007, US-008, US-010, US-011, US-012, US-013, US-015, US-018
 
-**Related:** ARCH-COMP-API
+### ARCH-003 · approved · source: architecture:component:api_backend
 
-### ARCH-COMP-API · approved · source: architecture:components.api_backend
+NestJS API -- REST backend for auth, RBAC, claim lifecycle, approvals, admin, audit trail, export, receipt upload orchestration and notification dispatch.
 
-NestJS 11 REST API handling authentication, RBAC, claim lifecycle, approvals, admin, audit trail, CSV export and notification dispatch.
+NestJS 11 modules (auth, claims, approvals, categories, users, notifications) with guards enforcing JWT and role-based access on every route. Endpoints: POST /auth/login (generic failure error), POST /auth/logout, GET /me, POST /me/privacy-notice/ack, GET /privacy-notice; GET/POST /users, PATCH /users/{id} (Admin only); GET/POST /categories, PATCH /categories/{id} (Admin only); POST /claims (draft), PATCH /claims/{id}, POST /claims/{id}/receipts, GET /claims/{id}/receipts/{receiptId}/url (signed, time-limited), POST /claims/{id}/submit (limit check, blocks if no manager), GET /claims/mine, GET /claims/{id} (owner or authorised approver/finance); GET /approvals/manager-queue, GET /approvals/finance-queue, POST /claims/{id}/approve, POST /claims/{id}/reject (required reason), POST /claims/{id}/reimburse (recording only); GET /claims (Finance, filterable), GET /claims/export (CSV).
 
-Component: NestJS API (NestJS 11). Structured into modules: auth, claims, approvals, categories, users, notifications, each guarded by JWT and role-based access checks on every route. Orchestrates receipt upload to S3, enforces category limit checks, writes audit entries on every status transition, and dispatches emails via SendGrid.
+**Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018
 
-**Related:** ARCH-COMP-WEB, ARCH-COMP-DB, ARCH-COMP-S3, ARCH-COMP-EMAIL
+### ARCH-004 · approved · source: architecture:component:database
 
-### ARCH-COMP-DB · approved · source: architecture:components.database
+PostgreSQL Database -- India-hosted relational store enforcing consistent claim status transitions.
 
-India-hosted PostgreSQL 16 store for users, roles, manager assignments, categories, limits, claims, receipt metadata and the audit trail.
+Entities: users (id, email, password_hash, full_name, role, manager_id, is_active, privacy_notice_ack_at, created_at); categories (id, name, limit_amount, is_active, created_at); claims (id, employee_id, category_id, amount, currency, expense_date, description, status, over_limit_flag, last_rejection_reason, created_at, updated_at); receipts (id, claim_id, s3_key, file_name, content_type, size_bytes, uploaded_at); claim_audit (id, claim_id, actor_user_id, action, from_status, to_status, comment, created_at). Hosted on RDS PostgreSQL 16 in Mumbai for residency and transactional consistency (a claim cannot be both reimbursed and rejected).
 
-Component: PostgreSQL Database (PostgreSQL 16), hosted on RDS in ap-south-1 (Mumbai). Enforces consistent claim status transitions transactionally (e.g. a claim cannot be both reimbursed and rejected). Holds all relational entities; receipt files themselves are kept out of the database in S3.
+**Related:** US-003, US-004, US-005, US-006, US-007, US-016, US-019
 
-**Related:** ARCH-COMP-API, ARCH-DATA-001
+### ARCH-005 · approved · source: architecture:component:object_store
 
-### ARCH-COMP-S3 · approved · source: architecture:components.object_store
+Receipt Object Storage -- durable, in-India S3 storage for receipt images, served via signed URLs.
 
-Amazon S3 (ap-south-1 Mumbai) durable storage for receipt image files, served to authorised roles via time-limited signed URLs.
+Amazon S3 (ap-south-1 Mumbai) stores receipt image files durably, kept out of the database, and served to authorised roles only via time-limited signed URLs -- satisfying NFR-005 (authorised-role-only access) and NFR-007 (India residency).
 
-Component: Receipt Object Storage, Amazon S3 in Mumbai. Keeps receipt binaries out of the database; access is mediated by the API, which issues time-limited signed URLs only to authorised roles (owner or authorised approver/finance).
+**Related:** US-008, US-019, NFR-005, NFR-007
 
-**Related:** ARCH-COMP-API
+### ARCH-006 · approved · source: architecture:component:email_service
 
-### ARCH-COMP-EMAIL · approved · source: architecture:components.email_service
+Email Notification Service -- SendGrid delivery of claim status-change emails.
 
-SendGrid delivers claim status-change emails (submitted, advanced to finance, approved, rejected with reason, reimbursed) to relevant users.
+SendGrid delivers emails for claim submitted, advanced to finance, approved, rejected (with reason), and reimbursed, to the relevant manager, Finance or employee recipients.
 
-Component: Email Notification Service, SendGrid. Triggered by the API on every claim status transition to notify the relevant employee, manager or finance user.
+**Related:** US-017
 
-**Related:** ARCH-COMP-API
+### ARCH-007 · approved · source: architecture:critical_path:sign_in
 
-- ⚠ SendGrid is a third-party SaaS outside the stated AWS-Mumbai boundary; whether it offers in-India data processing/residency guarantees for the personal data in these emails (names, emails, claim amounts/status) is not addressed in the input and should be confirmed against the DPDP residency goal stated in the overall architecture summary.
+Critical path: sign-in and session handling.
 
-### ARCH-CP-SIGNIN · approved · source: architecture:critical_paths.Sign-in and session
+Employee signs in with email/password; backend verifies a bcrypt hash and issues a JWT. Failed attempts return a generic error that does not reveal which field was wrong; sign-out discards the token; deactivated users cannot sign in.
 
-Email/password sign-in flow with bcrypt verification, JWT issuance, generic failure messaging, and deactivation/sign-out handling.
+**Related:** US-001, US-002
 
-Employee signs in with email/password; backend verifies the bcrypt password hash and issues a JWT. Failed attempts return a generic error that does not reveal which field (email or password) was wrong. Sign-out discards the token. Users marked deactivated cannot sign in.
+### ARCH-008 · approved · source: architecture:critical_path:create_submit_claim
 
-**Related:** ARCH-COMP-WEB, ARCH-COMP-API, ARCH-COMP-DB
+Critical path: create and submit a claim with receipts and limit check.
 
-### ARCH-CP-SUBMIT · approved · source: architecture:critical_paths.Create and submit claim with receipts and limit check
+Employee enters amount (INR), date, category, description and uploads receipt images; uploads are validated for type/size, stored in S3, with metadata saved. On submit, the category limit is checked (over-limit claims flagged or blocked per policy); otherwise the claim becomes pending manager approval, an audit entry is written, and the manager is emailed. Submission is blocked if the employee has no assigned manager.
 
-Employee creates an INR claim, uploads validated receipt images to S3, and submits it subject to a category limit check and manager assignment check.
+**Related:** US-004, US-007, US-008, US-009
 
-Employee enters amount (INR), date, category and description, and uploads receipt images; uploads are validated for type and size, stored in S3, and metadata saved to the database. On submit, the category limit is checked: over-limit claims are flagged or blocked (architecture does not specify which behaviour applies in which case); otherwise the claim becomes pending manager approval, an audit entry is written, and the manager is emailed. Submission is blocked entirely if the employee has no assigned manager.
+### ARCH-009 · approved · source: architecture:critical_path:approval_workflow
 
-**Related:** ARCH-COMP-WEB, ARCH-COMP-API, ARCH-COMP-S3, ARCH-COMP-DB, ARCH-CP-APPROVAL
+Critical path: sequential Manager -> Finance approval workflow.
 
-- ⚠ The input states over-limit claims are 'flagged or blocked' without specifying the rule that decides which outcome applies -- needs clarification.
+Manager sees only their team's pending claims; approves (advances to Finance) or rejects with a required reason (returns to employee). Finance sees only manager-approved claims; approves (finance-approved, reimbursement-eligible) or rejects with a reason. Every transition writes an audit entry and sends the relevant email.
 
-### ARCH-CP-APPROVAL · approved · source: architecture:critical_paths.Sequential approval workflow
+**Related:** US-012, US-013, US-016, US-017
 
-Sequential Manager-then-Finance approval workflow with required rejection reasons, per-transition audit entries and email notifications.
+### ARCH-010 · approved · source: architecture:deployment_nodes
 
-Manager sees only their own team's pending claims; can approve (advances claim to finance) or reject with a required reason (returns claim to employee for resubmission). Finance sees only manager-approved claims; can approve (finance-approved, eligible for reimbursement) or reject with a required reason. Every transition writes a claim_audit entry and sends the relevant status-change email.
+Deployment topology: all components hosted in AWS ap-south-1 (Mumbai) for DPDP residency.
 
-**Related:** ARCH-COMP-API, ARCH-COMP-DB, ARCH-COMP-EMAIL, ARCH-CP-SUBMIT
+Web App: static responsive Svelte 5 build served via CloudFront/S3. NestJS API: containerised Node.js (NestJS 11) service. PostgreSQL: Amazon RDS for PostgreSQL 16. Receipt Storage: Amazon S3 bucket (ap-south-1 Mumbai). Email: SendGrid SaaS API (external, not India-hosted -- email content is notification metadata, not the personal-data store itself).
 
-### ARCH-DATA-001 · approved · source: architecture:entities
+**Related:** US-019, NFR-007
 
-Five-table relational data model: users, categories, claims, receipts and claim_audit, covering identity, configuration, claim lifecycle, receipt metadata and audit history.
+### ARCH-011 · approved · source: architecture:technology_decisions
 
-users(id, email, password_hash, full_name, role, manager_id, is_active, privacy_notice_ack_at, created_at). categories(id, name, limit_amount, is_active, created_at). claims(id, employee_id, category_id, amount, currency, expense_date, description, status, over_limit_flag, last_rejection_reason, created_at, updated_at). receipts(id, claim_id, s3_key, file_name, content_type, size_bytes, uploaded_at). claim_audit(id, claim_id, actor_user_id, action, from_status, to_status, comment, created_at).
+Technology decisions and rationale for frontend, backend, database and cloud, as approved by the product owner.
 
-**Related:** ARCH-COMP-DB
+Frontend: Svelte 5 (alternatives considered: React, Vue) -- responsive UI, phone camera capture via file input, client-side RBAC-aware navigation. Backend: NestJS 11 (alternatives: Express, Fastify) -- modular structure (auth, claims, approvals, categories, users, notifications) with guards enforcing JWT/role access on every route. Database: PostgreSQL 16 (alternatives: MySQL, SQLite) -- transactional consistency for claim status, hosted on RDS Mumbai. Cloud: AWS (alternatives: Azure, GCP) -- ap-south-1 Mumbai hosts API, RDS and S3 in one in-country region for DPDP residency and native S3 pairing.
 
-### ARCH-API-001 · approved · source: architecture:endpoints
-
-Full REST surface: auth/session, privacy notice, user and category admin, claim CRUD and receipts, submission, approvals/rejections/reimbursement, and finance listing/export.
-
-Auth/session: POST /auth/login (generic error on failure), POST /auth/logout, GET /me (incl. privacy-notice ack state). Privacy notice: POST /me/privacy-notice/ack, GET /privacy-notice (viewable anytime). Admin: GET/POST /users, PATCH /users/{id} (role, manager, deactivate) -- Admin only. Categories: GET /categories (active ones selectable), POST /categories, PATCH /categories/{id} (edit/deactivate without affecting existing claims) -- Admin only. Claims: POST /claims (draft), PATCH /claims/{id} (draft/returned only), POST /claims/{id}/receipts (type/size validated, stored in S3), GET /claims/{id}/receipts/{receiptId}/url (signed, time-limited, authorised roles only), POST /claims/{id}/submit (limit check, blocked without manager), GET /claims/mine, GET /claims/{id} (full detail incl. receipts and audit history, owner or authorised approver/finance only). Approvals: GET /approvals/manager-queue, GET /approvals/finance-queue, POST /claims/{id}/approve, POST /claims/{id}/reject (reason required), POST /claims/{id}/reimburse (recording only, no payment). Finance: GET /claims (filterable by status/employee/category/date), GET /claims/export (CSV).
-
-**Related:** ARCH-COMP-API, ARCH-CP-SIGNIN, ARCH-CP-SUBMIT, ARCH-CP-APPROVAL, ARCH-DATA-001
-
-### ARCH-DEPLOY-001 · approved · source: architecture:deployment_nodes
-
-All infrastructure except email runs in AWS ap-south-1 (Mumbai): static CloudFront/S3 web app, containerised NestJS API, RDS PostgreSQL, S3 receipt bucket; SendGrid is the one external SaaS dependency.
-
-Web App: static responsive Svelte 5 build served via CloudFront/S3. NestJS API: containerised Node.js (NestJS 11) service. PostgreSQL: Amazon RDS for PostgreSQL 16. Receipt Storage: Amazon S3 bucket in ap-south-1 (Mumbai). Email: SendGrid, external SaaS API (not an AWS-Mumbai node).
-
-**Related:** ARCH-COMP-WEB, ARCH-COMP-API, ARCH-COMP-DB, ARCH-COMP-S3, ARCH-COMP-EMAIL
-
-- ⚠ SendGrid is the only deployment node outside the AWS Mumbai boundary -- see residency flag on ARCH-COMP-EMAIL.
-
-### ARCH-TECH-001 · approved · source: architecture:technology_decisions
-
-Four stack decisions, each with alternatives considered: Svelte over React/Vue, NestJS over Express/Fastify, PostgreSQL over MySQL/SQLite, and AWS over Azure/GCP.
-
-Frontend: Svelte 5 chosen (alternatives: React, Vue) for the responsive UI, phone-browser camera capture via file input capture attribute, and client-side RBAC-aware navigation. Backend: NestJS 11 chosen (alternatives: Express, Fastify) to structure the API into auth/claims/approvals/categories/users/notifications modules with JWT and role guards on every route. Database: PostgreSQL 16 chosen (alternatives: MySQL, SQLite) for transactional consistency (e.g. preventing a claim being both reimbursed and rejected) and RDS hosting in Mumbai for residency. Cloud: AWS chosen (alternatives: Azure, GCP), using Mumbai (ap-south-1) to host API, RDS and S3 together in one in-country region for DPDP data residency, pairing natively with S3.
-
-**Related:** ARCH-COMP-WEB, ARCH-COMP-API, ARCH-COMP-DB, ARCH-DEPLOY-001
+**Related:** REQ-SCOPE
 <!-- sdlc:auto:end narrative -->
 
 <!-- sdlc:auto:start building-blocks -->

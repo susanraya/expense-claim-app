@@ -5,9 +5,9 @@
 <!-- sdlc:auto:start narrative -->
 ### TEST-000 · draft
 
-No testing phase input has been provided.
+Testing phase has not started.
 
-No test plans, test cases, or test results have been supplied for this project yet.
+No test strategy, test plans, test cases, execution results, or defect reports were provided as input for this project.
 
-- ⚠ Testing phase has not started; no test coverage or results exist to document.
+- ⚠ Testing phase has not started; no test coverage exists yet against the 50 acceptance criteria defined in requirements.
 <!-- sdlc:auto:end narrative -->

@@ -5,93 +5,90 @@
 <!-- sdlc:auto:start narrative -->
 ## Summary
 
-### REQ-001 · approved · source: requirements:stack
+### REQ-SCOPE · approved · source: requirements:scope
 
-Product owner approved a fixed technology stack and two SaaS services for a lightweight-scope, India-only expense claim app serving under ~100 employees.
+Lightweight-scope expense claim web app for a single India-based company (<100 employees): claim creation, receipt upload, sequential Manager->Finance approval, admin configuration, INR-only claims.
 
-Approved stack (design against exactly these, no substitution): Backend NestJS 11; Cloud AWS (Mumbai region, chosen so app, DB and receipt files all stay in-country for DPDP residency, and to keep the whole system with one provider/region, pairing with S3); Database PostgreSQL 16 (chosen for strict consistency of claims/approvals/limits/audit trail, and because it comfortably handles <100 employees while keeping data in one India-hosted store); Frontend Svelte 5. Runtime services: Amazon S3 (saas; env AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, S3_BUCKET) for durable, India-hosted receipt image storage kept out of the database; SendGrid (saas; env SENDGRID_API_KEY) for status-change emails to employees/managers/finance. API keys required: AWS_ACCESS_KEY_ID, AWS_REGION, AWS_SECRET_ACCESS_KEY, S3_BUCKET, SENDGRID_API_KEY. Explicitly out of scope: OCR/AI extraction from receipts, integration/export to HR/payroll/accounting systems and in-app disbursement, and a native iOS/Android app (responsive web app instead). In-scope capabilities: claim creation (amount/date/category/description), receipt image upload, employee sign-in, employee claims/status dashboard, category list setup, INR as sole currency. Requirements version 1.
+Requirements v1. Product-owner-approved stack: NestJS 11 (backend), AWS Mumbai region (cloud, for DPDP residency, paired with S3), PostgreSQL 16 (database, transactional consistency for claim status), Svelte 5 (frontend). Approved services: Amazon S3 (saas, receipt storage, env AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY/AWS_REGION/S3_BUCKET) and SendGrid (saas, status emails, env SENDGRID_API_KEY). Required API keys: AWS_ACCESS_KEY_ID, AWS_REGION, AWS_SECRET_ACCESS_KEY, S3_BUCKET, SENDGRID_API_KEY. Out of scope: OCR/AI receipt extraction; direct HR/payroll/accounting integration or in-app disbursement; native iOS/Android app (responsive web instead). Capabilities in scope: claim creation (amount/date/category/description), receipt image upload, employee sign-in, employee claims/status dashboard, category list setup, INR as sole currency. NFR-009: system is sized for a single company under ~100 employees.
 
-**Related:** NFR-007, NFR-009
+**Related:** EPIC-001, EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-007, EPIC-008, EPIC-009, NFR-009
 
-- ⚠ No date is recorded for when this stack/version was approved.
+### REQ-EPIC-001 · approved · source: requirements:EPIC-001
 
-### EPIC-001 · approved · source: requirements:EPIC-001
+Email/password sign-in with role-based access so Employees, Managers, Finance and Admin each see only the functions appropriate to their role.
 
-Employees sign in with email/password; role-based access restricts each of the four roles (Employee, Manager, Finance, Admin) to only their appropriate functions.
-
-US-001 (critical): correct credentials sign the employee in to their claims dashboard (AC-001); wrong email or password is rejected with a generic error that does not reveal which field was wrong (AC-002, NFR-001); signing out ends the session and requires re-sign-in (AC-003, NFR-002). US-002 (high): Employees cannot reach admin/approval functions even via direct URL (AC-004, NFR-003); Managers can access approvals for their team but not category/user configuration (AC-005); Finance/Admin can access finance review, export and admin configuration (AC-006). Accepted risk per NFR-010: no SSO or MFA at this scope, email/password only.
+US-001 (critical): valid credentials sign the employee in and open their claims dashboard (AC-001); incorrect email or password is denied with a generic error that does not reveal which field was wrong (AC-002, NFR-001); signing out ends the session, requiring re-sign-in (AC-003, NFR-002). US-002 (high): Employees cannot reach admin/approval functions even by direct URL (AC-004, NFR-003 -- enforced on every route); Managers can approve for their team but not configure categories/users (AC-005); Finance/Admin can access finance review, export and admin configuration (AC-006). Stated assumption: no SSO/MFA at this scope (NFR-010, accepted risk).
 
 **Related:** US-001, US-002, AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, NFR-001, NFR-002, NFR-003, NFR-010
 
-### EPIC-002 · approved · source: requirements:EPIC-002
+### REQ-EPIC-002 · approved · source: requirements:EPIC-002
 
-An Admin (or Finance acting as admin) creates/edits/deactivates user accounts, assigns roles, and assigns each employee exactly one approving manager.
+Admin (or Finance acting as admin) manages user accounts, roles, and each employee's single approving manager.
 
-US-003 (high): Admin creates users with email and one of Employee/Manager/Finance/Admin role (AC-007); deactivating a departed employee blocks sign-in but preserves their historical claims (AC-008); non-admins are refused access to user management (AC-009). US-004 (high): Admin assigns one manager per employee as first-stage approver (AC-010, assumption: exactly one manager per employee); an employee with no manager assigned is prevented from submitting a claim or is flagged that no approver is configured (AC-011).
+US-003 (high): Admin creates/edits/deactivates user accounts and assigns role Employee/Manager/Finance/Admin (AC-007); deactivating a departed employee blocks sign-in while preserving historical claims (AC-008); non-Admins are refused access to user management (AC-009). US-004 (high): Admin assigns exactly one approving manager per employee, who becomes the first-stage approver (AC-010); an employee with no manager assigned is prevented from submitting a claim or flagged for missing approver (AC-011). Stated assumption: each employee has exactly one manager, reporting structure managed in-app.
 
 **Related:** US-003, US-004, AC-007, AC-008, AC-009, AC-010, AC-011
 
-### EPIC-003 · approved · source: requirements:EPIC-003
+### REQ-EPIC-003 · approved · source: requirements:EPIC-003
 
-Admin maintains the expense category list and an optional per-category INR spending limit used to flag/block over-limit claims.
+Admin configures the expense category list and an optional per-category INR spending limit used to flag/block claims at submission.
 
-US-005 (high): Admin adds categories, which become selectable when creating a claim (AC-012); editing/deactivating a category updates the selectable list without affecting claims already using it (AC-013). US-006 (high): Admin sets an optional per-claim limit in INR per category, applied to future claims (AC-014); categories with no limit configured have no limit check applied (AC-015).
+US-005 (high): Admin creates and maintains categories, which become selectable on claim creation (AC-012); editing/deactivating a category updates the selectable list without affecting existing claims already using it (AC-013). US-006 (high): Admin sets an optional per-claim limit in INR per category, applied to future claims (AC-014); categories with no limit configured skip the limit check entirely (AC-015).
 
 **Related:** US-005, US-006, AC-012, AC-013, AC-014, AC-015
 
-### EPIC-004 · approved · source: requirements:EPIC-004
+### REQ-EPIC-004 · approved · source: requirements:EPIC-004
 
-Employees manually enter claim details (amount, date, category, description) in INR, attach one or more receipt images (including phone-camera capture), and submitted claims are checked against configured category limits.
+Employees create INR expense claims (amount, date, category, description), attach receipt images (including phone-camera capture), and over-limit claims are flagged or blocked at submission.
 
-US-007 (critical): valid amount/date/category/description creates a submittable claim (AC-016); missing amount, date, or category blocks submission and highlights the field (AC-017); amount recorded only in INR, no currency choice (AC-018); successful submission sets status to pending manager approval with confirmation (AC-019). US-008 (critical): one or more receipt images attach to a claim as proof (AC-020); phone browser camera capture is supported (AC-021); images are stored as attachments only -- never read for amount/date/merchant (AC-022, out of scope: OCR); unsupported file type or oversized file is rejected with a clear message (AC-023, NFR-006). US-009 (high): claims exceeding a configured category limit are flagged or blocked per policy at submission, with the employee informed of the limit (AC-024); claims within the limit proceed normally (AC-025). NFR-008: delivered as a mobile-friendly responsive web app, not a native app.
+US-007 (critical): a valid amount/date/category/description creates a submittable claim (AC-016); a missing required field blocks submission with the field highlighted (AC-017); amount is recorded in INR only, no currency selector offered (AC-018); successful submission sets status to pending manager approval with confirmation (AC-019). US-008 (critical): one or more receipt images attach to a claim as proof (AC-020); phone-browser camera capture is supported (AC-021, NFR-008); images are stored as attachments only -- never read for amount/date/merchant, matching the OCR/AI-extraction out-of-scope note (AC-022); unsupported file types or over-size files are rejected with a clear message (AC-023, NFR-006). US-009 (high): claims exceeding a configured category limit are flagged or blocked at submission with the limit disclosed (AC-024); claims within limit, or in categories with no limit, proceed normally (AC-025).
 
 **Related:** US-007, US-008, US-009, AC-016, AC-017, AC-018, AC-019, AC-020, AC-021, AC-022, AC-023, AC-024, AC-025, NFR-006, NFR-008
 
-- ⚠ AC-024 does not specify whether over-limit claims are flagged (soft warning) or hard-blocked -- policy choice left open for design.
+### REQ-EPIC-005 · approved · source: requirements:EPIC-005
 
-### EPIC-005 · approved · source: requirements:EPIC-005
+Employees view their own claims and status on a dashboard, see rejection reasons, and can resubmit returned claims.
 
-Employees view a dashboard of only their own claims and statuses, drill into full claim detail and history, see rejection reasons, and can edit and resubmit rejected claims.
-
-US-010 (high): dashboard shows the employee's own claims only (amount, date, category, status such as pending manager/pending finance/approved-reimbursed/rejected) (AC-026, NFR-004 -- no visibility into other employees' claims); opening a claim shows full details, receipts and status history (AC-027). US-011 (medium): rejected claims show the reason and who rejected them (AC-028); editing and resubmitting a rejected claim re-enters the workflow starting at manager approval (AC-029).
+US-010 (high): dashboard shows only the signed-in employee's own claims (NFR-004) with amount, date, category and status such as pending manager, pending finance, approved/reimbursed, or rejected (AC-026); opening a claim shows full details, attached receipts and status history (AC-027). US-011 (medium): a rejected claim shows the reason and who rejected it (AC-028); editing and resubmitting re-enters the workflow starting at manager approval (AC-029).
 
 **Related:** US-010, US-011, AC-026, AC-027, AC-028, AC-029, NFR-004
 
-### EPIC-006 · approved · source: requirements:EPIC-006
+### REQ-EPIC-006 · approved · source: requirements:EPIC-006
 
-Claims move strictly Employee -> Manager -> Finance; a rejection at either stage returns the claim to the employee with a mandatory reason.
+Claims flow strictly sequentially Employee -> Manager -> Finance; a rejection at either stage returns the claim to the employee with a required reason.
 
-US-012 (critical): manager approval queue shows pending claims of their assigned employees with details/receipts (AC-030); approving advances the claim to Finance (AC-031); rejecting requires a reason and returns the claim to the employee without reaching Finance (AC-032, AC-033 -- rejection without a reason is not accepted). US-013 (critical): Finance queue shows manager-approved claims (AC-034); Finance approval makes the claim finance-approved and reimbursement-eligible (AC-035); Finance rejection with reason returns the claim to the employee (AC-036); claims still pending manager approval never appear in the Finance queue, enforcing strict sequencing (AC-037).
+US-012 (critical): Manager's queue shows only their own team's pending claims with details/receipts (AC-030); approval advances the claim to Finance (AC-031); rejection requires a reason and returns the claim to the employee without advancing (AC-032); a rejection without a reason is not accepted (AC-033). US-013 (critical): Finance queue shows only manager-approved claims (AC-034); claims still pending manager approval never appear in the Finance queue, enforcing strict sequencing (AC-037); Finance approval makes the claim finance-approved and reimbursement-eligible (AC-035); Finance rejection with reason returns the claim to the employee (AC-036).
 
 **Related:** US-012, US-013, AC-030, AC-031, AC-032, AC-033, AC-034, AC-035, AC-036, AC-037
 
-### EPIC-007 · approved · source: requirements:EPIC-007
+### REQ-EPIC-007 · approved · source: requirements:EPIC-007
 
-Finance records reimbursement (no in-app payment), can view/filter/export the claims list, and every claim retains a full audit trail of status changes and comments.
+Finance records reimbursement (no in-app payment), views/filters/exports claims, and every claim keeps a full audit trail.
 
-US-014 (high): Finance marks a finance-approved claim reimbursed, visible to the employee (AC-038); no payment is initiated by the app -- disbursement happens outside it (AC-039, out of scope). US-015 (high): Finance views all claims, filterable by status/employee/category/date (AC-040), and exports the list to a file such as CSV (AC-041). US-016 (medium): every submission, approval, rejection, or reimbursement action is recorded in an audit trail with actor, timestamp, and any comment/reason (AC-042); full chronological history is viewable per claim (AC-043).
+US-014 (high): Finance marks a finance-approved claim reimbursed, visible to the employee (AC-038); this records status only -- the app never initiates payment (AC-039), matching the out-of-scope note on in-app disbursement. US-015 (high): Finance views all claims with key details, filterable by status/employee/category/date (AC-040), and can export the listed claims to a file such as CSV (AC-041). US-016 (medium): every submission, approval, rejection or reimbursement writes an audit entry with action, actor, timestamp and comment/reason (AC-042); the full chronological history is viewable on the claim (AC-043).
 
 **Related:** US-014, US-015, US-016, AC-038, AC-039, AC-040, AC-041, AC-042, AC-043
 
-### EPIC-008 · approved · source: requirements:EPIC-008
+### REQ-EPIC-008 · approved · source: requirements:EPIC-008
 
-Relevant users receive email notifications (via SendGrid) when a claim's status changes.
+Email notifications keep managers, Finance and employees informed as a claim's status changes.
 
-US-017 (medium): submitting a claim emails the assigned manager (AC-044); manager approval emails Finance, and final actions (approval/rejection/reimbursement) email the employee (AC-045); rejection emails to the employee include the rejection reason (AC-046). Depends on the SendGrid service approved in REQ-001.
+US-017 (medium): the assigned manager is emailed when a claim enters their queue (AC-044); Finance is emailed when a claim advances, and the employee is emailed on approval, rejection or reimbursement (AC-045); rejection emails include the rejection reason (AC-046).
 
 **Related:** US-017, AC-044, AC-045, AC-046
 
-### EPIC-009 · approved · source: requirements:EPIC-009
+### REQ-EPIC-009 · approved · source: requirements:EPIC-009
 
-DPDP-aligned handling: a privacy notice at onboarding under an employment/legitimate-use basis, and employee data plus receipt files hosted within India.
+DPDP-aligned privacy notice at onboarding and India-region data residency for all employee personal data and receipts.
 
-DPDP Act 2023 -- notice and consent (or legitimate use): US-018 (high) shows a privacy notice explaining what personal data/receipts are processed and why on first access (AC-047), re-accessible later from within the app (AC-048). Per NFR-011 (accepted risk), no consent-manager or withdrawal flow is built because processing relies on the employment/legitimate-use basis rather than consent -- a human should confirm this legal basis is appropriate. Data residency & transfers: US-019 (high) requires personal data and receipt images to be held in an India region for both database and object storage (AC-049, AC-050), realized via the AWS Mumbai region and S3 approved in REQ-001, and satisfying NFR-007. Receipt access in storage is restricted to authorised roles (AC-050, NFR-005).
+DPDP Act 2023: notice obligation -- US-018 (high) shows a privacy notice explaining what personal data/receipts are processed and why on first access (AC-047), re-accessible later from within the app (AC-048); processing relies on the employment/legitimate-use basis, so no consent-manager or consent-withdrawal flow is built (NFR-011, explicit accepted risk). DPDP Act: data residency -- US-019 (high) requires personal data and receipt images held in an India region for both database and object storage (AC-049, NFR-007); receipt files in object storage are restricted to authorised roles (AC-050, NFR-005).
 
-**Related:** US-018, US-019, AC-047, AC-048, AC-049, AC-050, NFR-007, NFR-011
+**Related:** US-018, US-019, AC-047, AC-048, AC-049, AC-050, NFR-005, NFR-007, NFR-011
 
-- ⚠ No requirement covers data-principal rights (access, correction, erasure, grievance redressal) required under DPDP -- confirm whether these are needed and how they will be served.
-- ⚠ No requirement addresses whether this app/company qualifies as a Significant Data Fiduciary (extra duties: India-based DPO, audits, impact assessments) -- needs confirmation.
-- ⚠ No requirement addresses sector-specific data-localisation rules (RBI/SEBI/IRDAI) -- likely not applicable since this is an internal expense tool, not a payment/financial product, but should be confirmed.
+- ⚠ DPDP data-principal rights (access, correction, erasure, grievance redressal) not addressed by any requirement.
+- ⚠ DPDP breach-notification duties and CERT-In 6-hour reporting / 180-day log retention not addressed by any requirement or design.
+- ⚠ Significant Data Fiduciary applicability (India DPO, audits, DPIA) not assessed.
+- ⚠ Accessibility (RPwD Act 2016 / GIGW-WCAG alignment) not addressed by any requirement.
 <!-- sdlc:auto:end narrative -->
 
 <!-- sdlc:auto:start summary -->
