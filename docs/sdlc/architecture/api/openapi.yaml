@@ -2,6 +2,589 @@
 openapi: 3.1.0
 info:
   title: expense claim app
-  version: architecture-v0
+  version: architecture-v1
   description: Designed API from the approved architecture (not extracted from code).
-paths: {}
+paths:
+  /approvals/finance-queue:
+    get:
+      summary: Manager-approved claims pending final finance approval.
+      description: Manager-approved claims pending final finance approval.
+      operationId: get_approvals_finance_queue
+      parameters: []
+      responses:
+        '200':
+          description: '[{ id, employee, amount, categoryId }]'
+      security:
+      - bearerAuth: []
+  /approvals/manager-queue:
+    get:
+      summary: Manager's team claims pending manager approval.
+      description: Manager's team claims pending manager approval.
+      operationId: get_approvals_manager_queue
+      parameters: []
+      responses:
+        '200':
+          description: '[{ id, employee, amount, categoryId }]'
+      security:
+      - bearerAuth: []
+  /auth/login:
+    post:
+      summary: Authenticate with email/password; returns JWT. Failure returns a generic
+        error.
+      description: Authenticate with email/password; returns JWT. Failure returns
+        a generic error.
+      operationId: post_auth_login
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ email, password }'
+      responses:
+        '200':
+          description: '{ token, user }'
+  /auth/logout:
+    post:
+      summary: End the current session.
+      description: End the current session.
+      operationId: post_auth_logout
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: none
+      responses:
+        '200':
+          description: '204'
+      security:
+      - bearerAuth: []
+  /categories:
+    get:
+      summary: List categories with optional limits; active ones selectable on claims.
+      description: List categories with optional limits; active ones selectable on
+        claims.
+      operationId: get_categories
+      parameters: []
+      responses:
+        '200':
+          description: '[{ id, name, limitAmount, isActive }]'
+      security:
+      - bearerAuth: []
+    post:
+      summary: Create an expense category (Admin only).
+      description: Create an expense category (Admin only).
+      operationId: post_categories
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ name, limitAmount? }'
+      responses:
+        '200':
+          description: '{ id }'
+      security:
+      - bearerAuth: []
+  /categories/{id}:
+    patch:
+      summary: Edit name, limit or deactivate a category without affecting existing
+        claims (Admin only).
+      description: Edit name, limit or deactivate a category without affecting existing
+        claims (Admin only).
+      operationId: patch_categories_id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ name?, limitAmount?, isActive? }'
+      responses:
+        '200':
+          description: '{ id }'
+      security:
+      - bearerAuth: []
+  /claims:
+    get:
+      summary: Finance view of all claims, filterable by status, employee, category
+        or date.
+      description: Finance view of all claims, filterable by status, employee, category
+        or date.
+      operationId: get_claims
+      parameters: []
+      responses:
+        '200':
+          description: '[{ id, employee, amount, status }]'
+      security:
+      - bearerAuth: []
+    post:
+      summary: Create a draft claim with amount (INR), date, category and description.
+      description: Create a draft claim with amount (INR), date, category and description.
+      operationId: post_claims
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ amount, expenseDate, categoryId, description }'
+      responses:
+        '200':
+          description: '{ id, status }'
+      security:
+      - bearerAuth: []
+  /claims/export:
+    get:
+      summary: Export the filtered claims list as a CSV file.
+      description: Export the filtered claims list as a CSV file.
+      operationId: get_claims_export
+      parameters: []
+      responses:
+        '200':
+          description: text/csv
+      security:
+      - bearerAuth: []
+  /claims/mine:
+    get:
+      summary: Employee's own claims with status.
+      description: Employee's own claims with status.
+      operationId: get_claims_mine
+      parameters: []
+      responses:
+        '200':
+          description: '[{ id, amount, expenseDate, categoryId, status }]'
+      security:
+      - bearerAuth: []
+  /claims/{id}:
+    get:
+      summary: Full claim detail including receipts and audit history (owner or authorised
+        approver/finance).
+      description: Full claim detail including receipts and audit history (owner or
+        authorised approver/finance).
+      operationId: get_claims_id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: '{ claim, receipts, auditTrail }'
+      security:
+      - bearerAuth: []
+    patch:
+      summary: Edit a draft or returned claim before resubmission.
+      description: Edit a draft or returned claim before resubmission.
+      operationId: patch_claims_id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ amount?, expenseDate?, categoryId?, description? }'
+      responses:
+        '200':
+          description: '{ id }'
+      security:
+      - bearerAuth: []
+  /claims/{id}/approve:
+    post:
+      summary: Approve at the current stage (manager advances to finance; finance
+        makes finance-approved).
+      description: Approve at the current stage (manager advances to finance; finance
+        makes finance-approved).
+      operationId: post_claims_id_approve
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ comment? }'
+      responses:
+        '200':
+          description: '{ status }'
+      security:
+      - bearerAuth: []
+  /claims/{id}/receipts:
+    post:
+      summary: Upload a receipt image (type and size validated); stored in S3.
+      description: Upload a receipt image (type and size validated); stored in S3.
+      operationId: post_claims_id_receipts
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: multipart/form-data file
+      responses:
+        '200':
+          description: '{ receiptId }'
+      security:
+      - bearerAuth: []
+  /claims/{id}/receipts/{receiptId}/url:
+    get:
+      summary: Signed, time-limited URL to view a receipt (authorised roles only).
+      description: Signed, time-limited URL to view a receipt (authorised roles only).
+      operationId: get_claims_id_receipts_receiptid_url
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: receiptId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: '{ url }'
+      security:
+      - bearerAuth: []
+  /claims/{id}/reimburse:
+    post:
+      summary: Mark a finance-approved claim reimbursed (recording only, no payment).
+      description: Mark a finance-approved claim reimbursed (recording only, no payment).
+      operationId: post_claims_id_reimburse
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: none
+      responses:
+        '200':
+          description: '{ status }'
+      security:
+      - bearerAuth: []
+  /claims/{id}/reject:
+    post:
+      summary: Reject with a required reason; returns claim to employee.
+      description: Reject with a required reason; returns claim to employee.
+      operationId: post_claims_id_reject
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ reason }'
+      responses:
+        '200':
+          description: '{ status }'
+      security:
+      - bearerAuth: []
+  /claims/{id}/submit:
+    post:
+      summary: Submit a claim; applies category limit check and sets pending manager
+        approval. Blocked if no manager assigned.
+      description: Submit a claim; applies category limit check and sets pending manager
+        approval. Blocked if no manager assigned.
+      operationId: post_claims_id_submit
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: none
+      responses:
+        '200':
+          description: '{ status, overLimit }'
+      security:
+      - bearerAuth: []
+  /me:
+    get:
+      summary: Current user profile and role; includes privacy-notice acknowledgement
+        state.
+      description: Current user profile and role; includes privacy-notice acknowledgement
+        state.
+      operationId: get_me
+      parameters: []
+      responses:
+        '200':
+          description: '{ id, email, role, privacyNoticeAckAt }'
+      security:
+      - bearerAuth: []
+  /me/privacy-notice/ack:
+    post:
+      summary: Record acknowledgement of the DPDP privacy notice shown at onboarding.
+      description: Record acknowledgement of the DPDP privacy notice shown at onboarding.
+      operationId: post_me_privacy_notice_ack
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: none
+      responses:
+        '200':
+          description: '{ acknowledgedAt }'
+      security:
+      - bearerAuth: []
+  /privacy-notice:
+    get:
+      summary: Return the privacy notice content, viewable again anytime.
+      description: Return the privacy notice content, viewable again anytime.
+      operationId: get_privacy_notice
+      parameters: []
+      responses:
+        '200':
+          description: '{ content }'
+      security:
+      - bearerAuth: []
+  /users:
+    get:
+      summary: List users (Admin only).
+      description: List users (Admin only).
+      operationId: get_users
+      parameters: []
+      responses:
+        '200':
+          description: '[{ id, email, role, managerId, isActive }]'
+      security:
+      - bearerAuth: []
+    post:
+      summary: Create a user with email and role (Admin only).
+      description: Create a user with email and role (Admin only).
+      operationId: post_users
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ email, fullName, role, password, managerId? }'
+      responses:
+        '200':
+          description: '{ id }'
+      security:
+      - bearerAuth: []
+  /users/{id}:
+    patch:
+      summary: Edit role, manager assignment or deactivate a user (Admin only).
+      description: Edit role, manager assignment or deactivate a user (Admin only).
+      operationId: patch_users_id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ role?, managerId?, isActive? }'
+      responses:
+        '200':
+          description: '{ id }'
+      security:
+      - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    users:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        password_hash:
+          type: string
+        full_name:
+          type: string
+        role:
+          type: string
+        manager_id:
+          type: string
+          format: uuid
+        is_active:
+          type: boolean
+        privacy_notice_ack_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - email
+      - password_hash
+      - full_name
+      - role
+      - is_active
+      - created_at
+    categories:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        limit_amount:
+          type: number
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - is_active
+      - created_at
+    claims:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+        category_id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        currency:
+          type: string
+        expense_date:
+          type: string
+          format: date
+        description:
+          type: string
+        status:
+          type: string
+        over_limit_flag:
+          type: boolean
+        last_rejection_reason:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - employee_id
+      - category_id
+      - amount
+      - currency
+      - expense_date
+      - status
+      - over_limit_flag
+      - created_at
+      - updated_at
+    receipts:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        claim_id:
+          type: string
+          format: uuid
+        s3_key:
+          type: string
+        file_name:
+          type: string
+        content_type:
+          type: string
+        size_bytes:
+          type: integer
+        uploaded_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - claim_id
+      - s3_key
+      - file_name
+      - content_type
+      - size_bytes
+      - uploaded_at
+    claim_audit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        claim_id:
+          type: string
+          format: uuid
+        actor_user_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+        from_status:
+          type: string
+        to_status:
+          type: string
+        comment:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - claim_id
+      - actor_user_id
+      - action
+      - created_at
