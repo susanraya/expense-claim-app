@@ -1,3 +1,4 @@
+/// <reference types="multer" />
 /**
  * Handlers for Receipt Object Storage.
  *
@@ -6,7 +7,16 @@
  * `/file` route below, which applies the same role check instead of a public static path).
  * Both routes are guarded globally (see `AuthModule`).
  */
-import { Controller, Get, Param, Post, Req, Res, UploadedFile, UseInterceptors } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { Response } from "express";
 import type { Request } from "express";

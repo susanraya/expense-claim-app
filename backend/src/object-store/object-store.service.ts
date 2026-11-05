@@ -1,3 +1,4 @@
+/// <reference types="multer" />
 import { randomUUID } from "node:crypto";
 
 import {
@@ -135,7 +136,10 @@ export class ObjectStoreService {
     throw new ForbiddenException("You do not have permission to access this receipt.");
   }
 
-  private async findReceipt(claimId: string, receiptId: string): Promise<typeof receipts.$inferSelect> {
+  private async findReceipt(
+    claimId: string,
+    receiptId: string,
+  ): Promise<typeof receipts.$inferSelect> {
     const database = await db();
     const [receipt] = await database
       .select()
