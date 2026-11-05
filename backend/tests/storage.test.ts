@@ -12,7 +12,7 @@ import { join } from "node:path";
 import type { INestApplication } from "@nestjs/common";
 import { eq } from "drizzle-orm";
 import request from "supertest";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { createApp } from "../src/app";
 import { SEED_PASSWORD } from "../src/auth/seed";
