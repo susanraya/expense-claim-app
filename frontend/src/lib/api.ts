@@ -85,7 +85,10 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
       clearSessionToken();
       unauthorizedHandler?.();
     }
-    throw new ApiError(`${init?.method ?? "GET"} ${path} failed: ${response.status}`, response.status);
+    throw new ApiError(
+      `${init?.method ?? "GET"} ${path} failed: ${response.status}`,
+      response.status,
+    );
   }
   return response.status === 204 ? (undefined as T) : ((await response.json()) as T);
 }

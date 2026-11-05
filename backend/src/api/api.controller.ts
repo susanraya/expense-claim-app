@@ -9,7 +9,17 @@
  * `AuthModule`) except `POST /auth/login`; routes marked `@Roles(...)` additionally need
  * one of those roles.
  */
-import { Body, Controller, Get, HttpCode, Patch, Post, Req, UsePipes, ValidationPipe } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Patch,
+  Post,
+  Req,
+  UsePipes,
+  ValidationPipe,
+} from "@nestjs/common";
 import type { Request } from "express";
 
 import { AuthService, type AuthUser } from "../auth/auth.service";

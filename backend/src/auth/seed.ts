@@ -31,10 +31,12 @@ export async function seedUsers(database: Database): Promise<void> {
   }
 
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
-  await database.insert(users).values(seedRow("admin@example.com", passwordHash, "Alex Admin", "admin"));
-  await database.insert(users).values(
-    seedRow("finance@example.com", passwordHash, "Fiona Finance", "finance"),
-  );
+  await database
+    .insert(users)
+    .values(seedRow("admin@example.com", passwordHash, "Alex Admin", "admin"));
+  await database
+    .insert(users)
+    .values(seedRow("finance@example.com", passwordHash, "Fiona Finance", "finance"));
   const [manager] = await database
     .insert(users)
     .values(seedRow("manager@example.com", passwordHash, "Mia Manager", "manager"))
