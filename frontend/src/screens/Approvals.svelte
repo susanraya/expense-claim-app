@@ -513,7 +513,7 @@
             </blockquote>
 
             <div class="mt-6 flex items-center gap-3 text-xs" aria-label="Approval stage">
-              {#each stages as s, i}
+              {#each stages as s, i (s.name)}
                 {#if i > 0}
                   <span class="h-px w-6" style="background-color:{hairline};" aria-hidden="true"></span>
                 {/if}

@@ -87,6 +87,7 @@
   const activeLabel = $derived(tabDefs.find((t) => t.key === activeTab)?.label ?? 'All');
 
   $effect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions -- referenced only to track it as an effect dependency
     activeTab;
     panelIn = false;
     const t = setTimeout(() => (panelIn = true), 20);
@@ -195,7 +196,7 @@
         aria-label="Filter claims by status"
         class="-mx-1 flex flex-wrap items-center gap-1 overflow-x-auto px-1 pb-1"
       >
-        {#each tabDefs as tab, i}
+        {#each tabDefs as tab, i (tab.key)}
           <button
             data-wf={tab.wf}
             bind:this={tabEls[i]}
@@ -328,7 +329,7 @@
                       {statusMeta[claim.status].label}
                     </span>
                     <span class="mt-2 flex items-center gap-1" aria-hidden="true">
-                      {#each [1, 2, 3] as seg}
+                      {#each [1, 2, 3] as seg (seg)}
                         <span
                           class="h-[2px] w-5"
                           style="background-color:{claim.status !== 'rejected' && seg <= statusMeta[claim.status].stage

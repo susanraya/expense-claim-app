@@ -8,10 +8,12 @@
  */
 import { Module } from "@nestjs/common";
 
+import { ApiModule } from "./api/api.module";
 import { HealthController } from "./health.controller";
+import { ObjectStoreModule } from "./object-store/object-store.module";
 
 @Module({
-  imports: [],
+  imports: [ApiModule, ObjectStoreModule],
   controllers: [HealthController],
 })
 export class AppModule {}

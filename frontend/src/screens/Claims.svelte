@@ -156,6 +156,7 @@
 
   /* clearing stale export notice whenever the view changes */
   $effect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions -- referenced only to track them as effect dependencies
     fStatus; fEmployee; fCategory; fFrom; fTo;
     exportedFile = null;
   });
