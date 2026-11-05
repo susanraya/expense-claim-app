@@ -1,0 +1,104 @@
+{
+  "architecture_npm": [
+    "backend:@aws-sdk/client-s3",
+    "backend:@aws-sdk/s3-request-presigner",
+    "backend:@fast-csv/format",
+    "backend:@nestjs/jwt",
+    "backend:@nestjs/passport",
+    "backend:@sendgrid/mail",
+    "backend:bcrypt",
+    "backend:class-transformer",
+    "backend:class-validator",
+    "backend:passport-jwt"
+  ],
+  "key": {
+    "app_design_id": "05a125c2-ffc7-424f-86eb-d813faf76462",
+    "app_design_version": 1,
+    "architecture_document_id": "94d2dd2d-76d2-48ba-9456-0cfde5cf9caf",
+    "architecture_version": 1
+  },
+  "outcome": "prepared",
+  "packages": [
+    {
+      "ecosystem": "npm",
+      "installed_version": "12.0.3",
+      "name": "@nestjs/jwt",
+      "stack": "backend",
+      "status": "installed",
+      "version": ""
+    },
+    {
+      "ecosystem": "npm",
+      "installed_version": "12.0.0",
+      "name": "@nestjs/passport",
+      "stack": "backend",
+      "status": "installed",
+      "version": ""
+    },
+    {
+      "ecosystem": "npm",
+      "installed_version": "4.0.1",
+      "name": "passport-jwt",
+      "stack": "backend",
+      "status": "installed",
+      "version": ""
+    },
+    {
+      "ecosystem": "npm",
+      "installed_version": "6.0.0",
+      "name": "bcrypt",
+      "stack": "backend",
+      "status": "installed",
+      "version": ">=5.1.0"
+    },
+    {
+      "ecosystem": "npm",
+      "installed_version": "0.15.1",
+      "name": "class-validator",
+      "stack": "backend",
+      "status": "installed",
+      "version": ""
+    },
+    {
+      "ecosystem": "npm",
+      "installed_version": "0.5.1",
+      "name": "class-transformer",
+      "stack": "backend",
+      "status": "installed",
+      "version": ""
+    },
+    {
+      "ecosystem": "npm",
+      "installed_version": "3.1162.0",
+      "name": "@aws-sdk/client-s3",
+      "stack": "backend",
+      "status": "installed",
+      "version": ">=3.0.0"
+    },
+    {
+      "ecosystem": "npm",
+      "installed_version": "3.1162.0",
+      "name": "@aws-sdk/s3-request-presigner",
+      "stack": "backend",
+      "status": "installed",
+      "version": ">=3.0.0"
+    },
+    {
+      "ecosystem": "npm",
+      "installed_version": "8.1.6",
+      "name": "@sendgrid/mail",
+      "stack": "backend",
+      "status": "installed",
+      "version": ">=8.0.0"
+    },
+    {
+      "ecosystem": "npm",
+      "installed_version": "5.0.8",
+      "name": "@fast-csv/format",
+      "stack": "backend",
+      "status": "installed",
+      "version": ">=5.0.0"
+    }
+  ],
+  "prepared_by_run": "3634b0b0-cdd5-4d0a-8e2e-1179d3409ade"
+}

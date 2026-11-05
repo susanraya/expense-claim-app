@@ -13,13 +13,23 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@aws-sdk/client-s3": ">=3.0.0",
+    "@aws-sdk/s3-request-presigner": ">=3.0.0",
+    "@fast-csv/format": ">=5.0.0",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/jwt": "*",
+    "@nestjs/passport": "*",
     "@nestjs/platform-express": "^11.0.0",
+    "@sendgrid/mail": ">=8.0.0",
+    "bcrypt": ">=5.1.0",
+    "class-transformer": "*",
+    "class-validator": "*",
     "drizzle-orm": "^0.45.0",
+    "passport-jwt": "*",
+    "pg": "^8.13.0",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.0",
-    "pg": "^8.13.0"
+    "rxjs": "^7.8.0"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.0",
