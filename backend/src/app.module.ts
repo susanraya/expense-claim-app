@@ -9,11 +9,12 @@
 import { Module } from "@nestjs/common";
 
 import { ApiModule } from "./api/api.module";
+import { AuthModule } from "./auth/auth.module";
 import { HealthController } from "./health.controller";
 import { ObjectStoreModule } from "./object-store/object-store.module";
 
 @Module({
-  imports: [ApiModule, ObjectStoreModule],
+  imports: [AuthModule, ApiModule, ObjectStoreModule],
   controllers: [HealthController],
 })
 export class AppModule {}

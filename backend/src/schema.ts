@@ -23,12 +23,13 @@ import {
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
-  email: varchar("email").notNull(),
+  email: varchar("email").notNull().unique(),
   passwordHash: varchar("password_hash").notNull(),
   fullName: varchar("full_name").notNull(),
   role: varchar("role").notNull(),
   managerId: uuid("manager_id").references((): AnyPgColumn => users.id),
   isActive: boolean("is_active").notNull().default(true),
+  tokenVersion: integer("token_version").notNull().default(0),
   privacyNoticeAckAt: timestamp("privacy_notice_ack_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

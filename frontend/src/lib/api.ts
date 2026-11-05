@@ -11,8 +11,7 @@
 // The generated screens do NOT use this yet -- they render seeded sample data, exactly as
 // they were approved. This is the seam to replace that with real calls, one screen at a
 // time.
-export const API_BASE_URL: string =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+export const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
 // The shared bearer the deployed API expects (its SECRET_KEY). The platform bakes the
 // same value into both sides at deploy time, so authenticated calls work out of the box.
@@ -50,6 +49,24 @@ export function clearSessionToken(): void {
   }
 }
 
+// A session that has gone stale (token expired, revoked, or the account lost access
+// mid-session) shows up as a 401/403 from any call. One handler, registered once by the
+// app shell, clears the session and sends the user back to sign in -- every screen gets
+// this for free instead of each one checking the status itself.
+let unauthorizedHandler: (() => void) | null = null;
+
+export function onUnauthorized(handler: () => void): void {
+  unauthorizedHandler = handler;
+}
+
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const bearer = getSessionToken() ?? API_SECRET_KEY;
   // Join with exactly one slash: API_BASE_URL is baked with a trailing slash (the API
@@ -64,7 +81,11 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     },
   });
   if (!response.ok) {
-    throw new Error(`${init?.method ?? "GET"} ${path} failed: ${response.status}`);
+    if (response.status === 401 || response.status === 403) {
+      clearSessionToken();
+      unauthorizedHandler?.();
+    }
+    throw new ApiError(`${init?.method ?? "GET"} ${path} failed: ${response.status}`, response.status);
   }
   return response.status === 204 ? (undefined as T) : ((await response.json()) as T);
 }
