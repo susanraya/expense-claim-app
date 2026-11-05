@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 /**
  * Handlers for Receipt Object Storage.
  *
@@ -20,6 +19,9 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { Response } from "express";
 import type { Request } from "express";
+// Type-only: pulls in @types/multer's `Express.Multer.File` global augmentation, which
+// the restricted `types` compiler option otherwise would not include automatically.
+import type {} from "multer";
 
 import type { AuthenticatedUser } from "../auth/jwt.strategy";
 import { Roles } from "../auth/roles.decorator";

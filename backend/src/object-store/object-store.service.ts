@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { randomUUID } from "node:crypto";
 
 import {
@@ -8,6 +7,9 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { eq } from "drizzle-orm";
+// Type-only: pulls in @types/multer's `Express.Multer.File` global augmentation, which
+// the restricted `types` compiler option otherwise would not include automatically.
+import type {} from "multer";
 
 import type { AuthenticatedUser } from "../auth/jwt.strategy";
 import { db } from "../db";
