@@ -25,7 +25,12 @@ describe("[AC-050][NFR-005] receipt access", () => {
     const database = await db();
     const [category] = await database
       .insert(categories)
-      .values({ id: randomUUID(), name: "Receipt Access Test", isActive: true, createdAt: new Date() })
+      .values({
+        id: randomUUID(),
+        name: "Receipt Access Test",
+        isActive: true,
+        createdAt: new Date(),
+      })
       .returning();
     const [employee] = await database
       .select()
@@ -85,7 +90,12 @@ describe("[AC-050][NFR-005] receipt access", () => {
     return res.body.token as string;
   }
 
-  function uploadAs(token: string, filename: string, bytes = "receipt-bytes", contentType = "image/png") {
+  function uploadAs(
+    token: string,
+    filename: string,
+    bytes = "receipt-bytes",
+    contentType = "image/png",
+  ) {
     return request(app.getHttpServer())
       .post(`/claims/${claimId}/receipts`)
       .set("Authorization", `Bearer ${token}`)
