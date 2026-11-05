@@ -3,153 +3,99 @@
 > Maintained by QuorQ AI SDLC. Text between `sdlc:auto` markers is regenerated; anything outside them is yours and is kept.
 
 <!-- sdlc:auto:start narrative -->
-### DEV-SPRINT-1 · draft · source: plan:Sprint 1
+### PLAN-001 · approved · source: plan:v1
 
-Sprint 1 goal: stand up authentication, role-based access control and India-region hosting (capacity 20 points).
+Approved development plan (version 1), 6 sprints at 20-point capacity each, covering the full expense-claim lifecycle from authentication through audit trail and notifications.
 
-Plan v1, approved at plan level. Goal text: 'Stand up authentication, role-based access control and India-region hosting.'
+Plan status: approved, version 1. 6 sprints, each capacity 20 points. Sprint 1: auth, RBAC, India-region hosting. Sprint 2: admin configuration (users, manager assignment, categories, limits) plus privacy notice. Sprint 3: claim creation, receipt upload, over-limit flagging. Sprint 4: employee status tracking and manager approval. Sprint 5: finance final approval, reimbursement recording, reporting/export. Sprint 6: audit trail and email notifications. Epics: EPIC-001 Authentication & Access Control, EPIC-002 User & Role Administration, EPIC-003 Expense Category & Limit Configuration, EPIC-004 Expense Claim Creation & Receipt Upload, EPIC-005 Employee Claims Dashboard, EPIC-006 Sequential Approval Workflow, EPIC-007 Reimbursement Recording/Reporting & Audit, EPIC-008 Notifications, EPIC-009 Data Protection & Residency (DPDP). All 19 stories are scoped with points and assigned agent role (backend-agent, frontend-agent, integration-agent, security-agent, devops-agent); several stories are broken into explicit tasks (see per-sprint entries).
 
-**Related:** EPIC-001, US-019
+**Related:** US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018, US-019
 
-- ⚠ Input does not explicitly map backlog items to this sprint; EPIC-001/US-019 association is inferred only from the goal wording, not an explicit item-sprint field.
+- ⚠ Epics themselves (EPIC-001..EPIC-009) carry no point estimate or role assignment -- only child stories are scoped.
+- ⚠ Plan has no sprint start/end dates.
 
-### DEV-SPRINT-2 · draft · source: plan:Sprint 2
+### PLAN-SPRINT-1 · approved · source: plan:Sprint 1
 
-Sprint 2 goal: Admin configuration (users, manager assignment, categories, limits) plus privacy notice (capacity 20 points).
+Sprint 1 stands up authentication, role-based access control, and India-region data hosting.
 
-Plan v1, approved at plan level. Goal text: 'Admin configuration: users, manager assignment, categories and limits, plus privacy notice.'
+Goal: Stand up authentication, role-based access control and India-region hosting. Capacity: 20 points. Items: US-001 Employee sign-in (8pts, backend-agent) with tasks US-001-T1 Implement auth endpoints with hashed passwords and session/token issuance (backend-agent), US-001-T2 Build sign-in and sign-out UI (frontend-agent), US-001-T3 Add session expiry/guard middleware (security-agent); US-002 Role-based access enforcement (5pts, backend-agent); US-019 Store data within India (3pts, devops-agent). Associated epics: EPIC-001 Authentication & Access Control, EPIC-009 Data Protection & Residency (DPDP).
 
-**Related:** EPIC-002, EPIC-003, US-018
+**Related:** US-001, US-002, US-019
 
-- ⚠ Item-to-sprint mapping inferred from goal wording only; not an explicit field in the input.
+### PLAN-SPRINT-2 · approved · source: plan:Sprint 2
 
-### DEV-SPRINT-3 · draft · source: plan:Sprint 3
+Sprint 2 covers admin configuration -- user/role management, manager assignment, expense categories and limits -- plus the onboarding privacy notice.
 
-Sprint 3 goal: employees can create claims, attach receipts, and have over-limit claims flagged (capacity 20 points).
+Goal: Admin configuration: users, manager assignment, categories and limits, plus privacy notice. Capacity: 20 points. Items: US-003 Manage users and roles (5pts, backend-agent); US-004 Assign approving manager to each employee (3pts, backend-agent); US-005 Set up expense categories (3pts, backend-agent); US-006 Configure per-category spending limits (2pts, backend-agent); US-018 Privacy notice at onboarding (3pts, frontend-agent). Associated epics: EPIC-002 User & Role Administration, EPIC-003 Expense Category & Limit Configuration, EPIC-009 Data Protection & Residency (DPDP).
 
-Plan v1, approved at plan level. Goal text: 'Employees can create claims, attach receipts, and have over-limit claims flagged.'
+**Related:** US-003, US-004, US-005, US-006, US-018
+
+### PLAN-SPRINT-3 · approved · source: plan:Sprint 3
+
+Sprint 3 lets employees create claims, attach receipts, and triggers automatic over-limit flagging.
+
+Goal: Employees can create claims, attach receipts, and have over-limit claims flagged. Capacity: 20 points. Items: US-007 Create and submit an expense claim (8pts, backend-agent) with tasks US-007-T1 Implement claim create/update/submit endpoints (backend-agent), US-007-T2 Build claim entry form (frontend-agent), US-007-T3 Block submission when no approving manager is configured (backend-agent); US-008 Upload receipt images as proof (8pts, integration-agent) with tasks US-008-T1 Implement S3 upload integration and receipt endpoints (integration-agent), US-008-T2 Build receipt upload UI with phone camera capture (frontend-agent), US-008-T3 Validate file type and size with clear rejection messaging (backend-agent); US-009 Over-limit claim flagging at submission (3pts, backend-agent). Associated epic: EPIC-004 Expense Claim Creation & Receipt Upload.
 
 **Related:** US-007, US-008, US-009
 
-- ⚠ Item-to-sprint mapping inferred from goal wording only; not an explicit field in the input.
+### PLAN-SPRINT-4 · approved · source: plan:Sprint 4
 
-### DEV-SPRINT-4 · draft · source: plan:Sprint 4
+Sprint 4 gives employees claim-status visibility and lets managers approve or reject their team's claims.
 
-Sprint 4 goal: employees track claim status and managers can approve or reject team claims (capacity 20 points).
-
-Plan v1, approved at plan level. Goal text: 'Employees track claim status and managers can approve or reject team claims.'
+Goal: Employees track claim status and managers can approve or reject team claims. Capacity: 20 points. Items: US-010 View my claims and their status (5pts, frontend-agent); US-011 See rejection reason and resubmit (3pts, frontend-agent); US-012 Manager approves or rejects team claims (8pts, backend-agent) with tasks US-012-T1 Implement manager queue and approve/reject endpoints (backend-agent), US-012-T2 Build manager approval queue UI (frontend-agent), US-012-T3 Record status-change audit entries on approve/reject (backend-agent). Associated epics: EPIC-005 Employee Claims Dashboard, EPIC-006 Sequential Approval Workflow.
 
 **Related:** US-010, US-011, US-012
 
-- ⚠ Item-to-sprint mapping inferred from goal wording only; not an explicit field in the input.
+### PLAN-SPRINT-5 · approved · source: plan:Sprint 5
 
-### DEV-SPRINT-5 · draft · source: plan:Sprint 5
+Sprint 5 adds finance's final approval step, reimbursement recording, and claims list viewing/export.
 
-Sprint 5 goal: Finance gives final approval, records reimbursement, and can view/export claims (capacity 20 points).
-
-Plan v1, approved at plan level. Goal text: 'Finance gives final approval, records reimbursement, and can view/export claims.'
+Goal: Finance gives final approval, records reimbursement, and can view/export claims. Capacity: 20 points. Items: US-013 Finance gives final approval (5pts, backend-agent); US-014 Mark a claim as reimbursed (2pts, backend-agent); US-015 View and export claims list (5pts, backend-agent). Associated epic: EPIC-007 Reimbursement Recording, Reporting & Audit (partial -- continues in Sprint 6).
 
 **Related:** US-013, US-014, US-015
 
-- ⚠ Item-to-sprint mapping inferred from goal wording only; not an explicit field in the input.
+### PLAN-SPRINT-6 · approved · source: plan:Sprint 6
 
-### DEV-SPRINT-6 · draft · source: plan:Sprint 6
+Sprint 6 completes the claim lifecycle with a full audit trail and email notifications.
 
-Sprint 6 goal: full audit trail and email notifications complete the claim lifecycle (capacity 20 points).
-
-Plan v1, approved at plan level. Goal text: 'Full audit trail and email notifications complete the claim lifecycle.'
+Goal: Full audit trail and email notifications complete the claim lifecycle. Capacity: 20 points. Items: US-016 Claim audit trail (5pts, backend-agent); US-017 Email notifications on status changes (8pts, integration-agent) with tasks US-017-T1 Implement SendGrid email service wrapper (integration-agent), US-017-T2 Trigger manager and finance notification emails (backend-agent), US-017-T3 Trigger employee notification emails (backend-agent). Associated epics: EPIC-007 Reimbursement Recording, Reporting & Audit (remainder), EPIC-008 Notifications.
 
 **Related:** US-016, US-017
 
-- ⚠ Item-to-sprint mapping inferred from goal wording only; not an explicit field in the input.
+### DEV-US-001 · approved · source: dev:US-001
 
-### DEV-EPIC-001 · draft · source: plan:EPIC-001,US-001,US-001-T1,US-001-T2,US-001-T3,US-002
+Employee sign-in story delivered and committed.
 
-Planned backlog for Authentication & Access Control: 13 points across US-001 and US-002.
+Ticket US-001 (Employee sign-in) status=delivered, commit 44754f4329469c630e11a7b22462dd4d8000b8e1. Per the sprint plan this story covers auth endpoints with hashed passwords and session/token issuance, sign-in/sign-out UI, and session expiry/guard middleware (tasks US-001-T1/T2/T3).
 
-US-001 (8 pts, backend-agent): auth endpoints with hashed passwords and token issuance (T1, backend-agent); sign-in/sign-out UI (T2, frontend-agent); session expiry/guard middleware (T3, security-agent). US-002 (5 pts, backend-agent): role-based access enforcement.
+**Related:** US-001, PLAN-SPRINT-1
 
-**Related:** REQ-EPIC-001, US-001, US-002
+- ⚠ Dev run input reports only the parent story US-001 as delivered; no individual confirmation is given for sub-tasks US-001-T1, US-001-T2, or US-001-T3.
 
-- ⚠ No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built.
+### DEV-US-002 · approved · source: dev:US-002
 
-### DEV-EPIC-002 · draft · source: plan:EPIC-002,US-003,US-004
+Role-based access enforcement story delivered and committed.
 
-Planned backlog for User & Role Administration: 8 points across US-003 and US-004.
+Ticket US-002 (Role-based access enforcement) status=delivered, commit 44754f4329469c630e11a7b22462dd4d8000b8e1 -- the same commit hash reported for US-001, indicating both were delivered together.
 
-US-003 (5 pts, backend-agent): manage users and roles. US-004 (3 pts, backend-agent): assign approving manager to each employee.
+**Related:** US-002, PLAN-SPRINT-1
 
-**Related:** REQ-EPIC-002, US-003, US-004
+### DEV-US-019 · approved · source: dev:US-019
 
-- ⚠ No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built.
+India data-residency story delivered and committed.
 
-### DEV-EPIC-003 · draft · source: plan:EPIC-003,US-005,US-006
+Ticket US-019 (Store data within India) status=delivered, commit 33ce2cc1c7882d28b5201f1d8976daaeec7c2bdd.
 
-Planned backlog for Expense Category & Limit Configuration: 5 points across US-005 and US-006.
+**Related:** US-019, PLAN-SPRINT-1
 
-US-005 (3 pts, backend-agent): set up expense categories. US-006 (2 pts, backend-agent): configure per-category spending limits.
+### DEV-RUN-001 · draft · source: dev:run-status
 
-**Related:** REQ-EPIC-003, US-005, US-006
+Development run is reported as overall 'completed', but ticket-level delivery evidence is provided for only 3 of the 19 planned stories.
 
-- ⚠ No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built.
+Development run status: completed. Ticket-level records were supplied only for US-001, US-002, and US-019 (all delivered, Sprint 1 scope). No ticket records were provided for the 16 remaining stories spanning Sprints 2-6: US-003-US-006 (admin configuration, Sprint 2), US-007-US-009 (claim creation/receipts, Sprint 3), US-010-US-012 (employee dashboard/manager approval, Sprint 4), US-013-US-015 (finance approval/reimbursement/reporting, Sprint 5), US-016-US-017 (audit trail/notifications, Sprint 6), nor US-018 (privacy notice, Sprint 2). No task-level items (e.g., US-007-T1/T2/T3, US-008-T1/T2/T3, US-012-T1/T2/T3, US-017-T1/T2/T3) were reported either.
 
-### DEV-EPIC-004 · draft · source: plan:EPIC-004,US-007,US-007-T1..T3,US-008,US-008-T1..T3,US-009
+**Related:** US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015, US-016, US-017, US-018
 
-Planned backlog for Expense Claim Creation & Receipt Upload: 19 points across US-007, US-008 and US-009.
-
-US-007 (8 pts, backend-agent): claim create/update/submit endpoints (T1, backend-agent); claim entry form (T2, frontend-agent); block submission with no approving manager (T3, backend-agent). US-008 (8 pts, integration-agent): S3 upload integration and receipt endpoints (T1, integration-agent); receipt upload UI with phone camera capture (T2, frontend-agent); file type/size validation with rejection messaging (T3, backend-agent). US-009 (3 pts, backend-agent): over-limit claim flagging at submission.
-
-**Related:** REQ-EPIC-004, US-007, US-008, US-009
-
-- ⚠ No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built.
-
-### DEV-EPIC-005 · draft · source: plan:EPIC-005,US-010,US-011
-
-Planned backlog for Employee Claims Dashboard: 8 points across US-010 and US-011.
-
-US-010 (5 pts, frontend-agent): view my claims and their status. US-011 (3 pts, frontend-agent): see rejection reason and resubmit.
-
-**Related:** REQ-EPIC-005, US-010, US-011
-
-- ⚠ No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built.
-
-### DEV-EPIC-006 · draft · source: plan:EPIC-006,US-012,US-012-T1..T3,US-013
-
-Planned backlog for Sequential Approval Workflow: 13 points across US-012 and US-013.
-
-US-012 (8 pts, backend-agent): manager queue and approve/reject endpoints (T1, backend-agent); manager approval queue UI (T2, frontend-agent); status-change audit entries on approve/reject (T3, backend-agent). US-013 (5 pts, backend-agent): Finance gives final approval.
-
-**Related:** REQ-EPIC-006, US-012, US-013
-
-- ⚠ No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built.
-
-### DEV-EPIC-007 · draft · source: plan:EPIC-007,US-014,US-015,US-016
-
-Planned backlog for Reimbursement Recording, Reporting & Audit: 12 points across US-014, US-015 and US-016.
-
-US-014 (2 pts, backend-agent): mark a claim as reimbursed. US-015 (5 pts, backend-agent): view and export claims list. US-016 (5 pts, backend-agent): claim audit trail.
-
-**Related:** REQ-EPIC-007, US-014, US-015, US-016
-
-- ⚠ No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built.
-
-### DEV-EPIC-008 · draft · source: plan:EPIC-008,US-017,US-017-T1..T3
-
-Planned backlog for Notifications: 8 points on US-017.
-
-US-017 (8 pts, integration-agent): SendGrid email service wrapper (T1, integration-agent); trigger manager/finance notification emails (T2, backend-agent); trigger employee notification emails (T3, backend-agent).
-
-**Related:** REQ-EPIC-008, US-017
-
-- ⚠ No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built.
-
-### DEV-EPIC-009 · draft · source: plan:EPIC-009,US-018,US-019
-
-Planned backlog for Data Protection & Residency (DPDP): 6 points across US-018 and US-019.
-
-US-018 (3 pts, frontend-agent): privacy notice at onboarding. US-019 (3 pts, devops-agent): store data within India.
-
-**Related:** REQ-EPIC-009, US-018, US-019
-
-- ⚠ No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built -- includes the India-hosting item itself.
+- ⚠ Discrepancy: overall dev run status is 'completed' but delivery evidence covers only 3 of 19 planned stories -- unclear whether the remaining work was actually finished, is in progress, or wasn't started.
+- ⚠ No delivery status for US-003 through US-018 or for any sub-tasks under US-007, US-008, US-012, and US-017.
 <!-- sdlc:auto:end narrative -->

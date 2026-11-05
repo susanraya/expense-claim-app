@@ -5,7 +5,7 @@
 <!-- sdlc:auto:start overview -->
 expense claim application where you upload reciept and claim the expenses
 
-**Documentation version:** v1
+**Documentation version:** v2
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -15,7 +15,7 @@ expense claim application where you upload reciept and claim the expenses
 |---|---|
 | [Requirements](requirements/README.md) | v1 approved |
 | [Architecture](architecture/README.md) | 11 entries |
-| [Development](development/README.md) | 15 entries |
+| [Development](development/README.md) | 11 entries |
 | [Testing](testing/README.md) | 1 entry |
 | [Deployment](deployment/README.md) | 1 entry |
 | [Maintenance](maintenance/README.md) | 1 entry |
@@ -23,15 +23,15 @@ expense claim application where you upload reciept and claim the expenses
 | [API (OpenAPI)](architecture/api/openapi.yaml) | generated |
 | [Decisions (ADRs)](architecture/adr/README.md) | 4 decisions |
 | [Sprint plan](development/sprint-plan.md) | 6 sprints |
-| [Developer guide](development/developer-guide.md) | not generated yet |
-| [API reference](development/api-reference.md) | 0 routes |
+| [Developer guide](development/developer-guide.md) | generated |
+| [API reference](development/api-reference.md) | 27 routes |
 | [Test report](testing/test-report.md) | not run yet |
-| [Tests](testing/test-cases.md) | 0 tests |
+| [Tests](testing/test-cases.md) | 57 tests |
 | [Deployment guide](deployment/deployment-guide.md) | not deployed yet |
 | [Runbook](deployment/runbook.md) | not deployed yet |
 | [Release notes](deployment/release-notes.md) | 0 releases |
 | [Traceability matrix](traceability-matrix.md) | 19 requirements |
-| [Changelog](CHANGELOG.md) | 1 version |
+| [Changelog](CHANGELOG.md) | 2 versions |
 <!-- sdlc:auto:end contents -->
 
 ## Open gaps
@@ -46,10 +46,11 @@ expense claim application where you upload reciept and claim the expenses
 
 ### Development
 
-- Input does not explicitly map backlog items to this sprint; EPIC-001/US-019 association is inferred only from the goal wording, not an explicit item-sprint field.
-- Item-to-sprint mapping inferred from goal wording only; not an explicit field in the input.
-- No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built.
-- No completion status, code artifacts, or test evidence provided; cannot confirm whether this work was actually built -- includes the India-hosting item itself.
+- Epics themselves (EPIC-001..EPIC-009) carry no point estimate or role assignment -- only child stories are scoped.
+- Plan has no sprint start/end dates.
+- Dev run input reports only the parent story US-001 as delivered; no individual confirmation is given for sub-tasks US-001-T1, US-001-T2, or US-001-T3.
+- Discrepancy: overall dev run status is 'completed' but delivery evidence covers only 3 of 19 planned stories -- unclear whether the remaining work was actually finished, is in progress, or wasn't started.
+- No delivery status for US-003 through US-018 or for any sub-tasks under US-007, US-008, US-012, and US-017.
 
 ### Testing
 
